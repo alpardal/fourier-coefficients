@@ -32,5 +32,10 @@ module.exports = {
         loaders: ['babel-loader']
       }
     ]
+  },
+  resolve: {
+    alias: {
+      jquery: 'jquery/src/jquery'
+    }
   }
 };
