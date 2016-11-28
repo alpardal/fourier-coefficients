@@ -7,7 +7,7 @@ const playButton = $('#play-button'),
       sliderContainer = $("#sliders-container"),
       sliders = Array.from({length: 10}, Slider);
 
-sliders[0].setTo(1);
+sliders[0].setTo(1, 0);
 sliders.forEach((s) => s.appendTo(sliderContainer));
 
 const ctx = new AudioContext();
@@ -17,21 +17,20 @@ let osc,
     playing = false;
 
 function loadTable(table) {
-  console.log(`table length is ${table.length}`);
   for (let i = 1; i < table.length && i-1 < sliders.length; i++) {
     sliders[i-1].setTo(table[i]);
   }
   settingsChanged();
 }
 
-setTimeout(() => {
-  loadTable([0, 0.5, 0.4, 0.2, 0.4, 0, 0.4, 0, 0.4, 0, 0.4, 0, 0.4]);
-  play();
-}, 0);
+// setTimeout(() => {
+//   loadTable([0, 0.5, 0.4, 0.2, 0.4, 0, 0.4, 0, 0.4, 0, 0.4, 0, 0.4]);
+//   play();
+// }, 0);
 
 function harmonicsTable() {
-  const real = new Float32Array([0].concat(sliders.map((s) => s.value()))),
-        imag = new Float32Array(real.length);
+  const real = new Float32Array([0].concat(sliders.map((s) => s.real))),
+        imag = new Float32Array([0].concat(sliders.map((s) => s.imag)));
   return ctx.createPeriodicWave(real, imag);
 }
 

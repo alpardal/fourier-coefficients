@@ -1,8 +1,9 @@
 import $ from "jquery";
+import Graphics from "./graphics";
 
 const template = `
 <div class="slider-col">
-  <input type="range" min="0" max="1" value="0" id="fader" step=".01">
+  <canvas width=100 height=100></canvas>
   <label>0</label>
 </div>
 `;
@@ -10,24 +11,26 @@ const template = `
 class SliderClass {
   constructor(element) {
     this.element = element;
-    this.currentValue = 0;
-    this.input = this.element.find("input");
+    this.real = 0;
+    this.imag = 0;
+    const canvas = this.element.find("canvas").get(0);
+    this.graphics = Graphics(canvas);
     this.label = this.element.find("label");
-    this.input.on('input', this._changed.bind(this));
+
+    canvas.addEventListener('mousedown', this._mouseDown.bind(this));
+    canvas.addEventListener('mouseup', this._mouseUp.bind(this));
+    canvas.addEventListener('mousemove', this._mouseMove.bind(this));
   }
 
-  value() {
-    return this.currentValue;
-  }
-
-  setTo(value) {
-    this.currentValue = value;
-    this.label.text(`${value}`);
-    this.input.val(value);
+  setTo(real, imag) {
+    this.real = real;
+    this.imag = imag;
+    this._changed();
   }
 
   appendTo(container) {
     container.append(this.element);
+    this._render();
   }
 
   onChange(listener) {
@@ -35,11 +38,36 @@ class SliderClass {
   }
 
   _changed() {
-    this.currentValue = this.input.val();
-    this.label.text(`${this.currentValue}`);
+    this.label.text(`(${this.real.toFixed(2)}, ${this.imag.toFixed(2)})`);
+    this._render();
     if (this.listener) {
-      this.listener(this.currentValue);
+      this.listener(this.real, this.imag);
     }
+  }
+
+  _render() {
+    this.graphics.render(this.real, this.imag);
+  }
+
+  _mouseDown(event) {
+    this.down = true;
+  }
+
+  _mouseUp(event) {
+    this.down = false;
+    if (this.lastPosition) {
+    }
+  }
+
+  _mouseMove(event) {
+    if (this.down) {
+      const pos = this.graphics.valueAt(this._eventCoords(event));
+      this.setTo(...pos);
+    }
+  }
+
+  _eventCoords(event) {
+    return [event.offsetX, event.offsetY];
   }
 }
 
