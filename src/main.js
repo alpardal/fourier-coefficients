@@ -1,14 +1,19 @@
 import $ from "jquery";
 import debounce from "debounce";
+import Hash from "./hash";
 import Slider from "./slider";
+import TableSelect from "./table_select";
 
 const playButton = $('#play-button'),
       frequencyInput = $('#frequency-input'),
+      frequencyButtons = $(".frequency-button"),
       sliderContainer = $("#sliders-container"),
-      sliders = Array.from({length: 10}, Slider);
+      sliders = Array.from({length: 22}, Slider);
 
 sliders[0].setTo(1, 0);
 sliders.forEach((s) => s.appendTo(sliderContainer));
+
+TableSelect.init(loadTable, defaultTable);
 
 const ctx = new AudioContext();
 let osc,
@@ -16,17 +21,24 @@ let osc,
     table = harmonicsTable(),
     playing = false;
 
-function loadTable(table) {
-  for (let i = 1; i < table.length && i-1 < sliders.length; i++) {
-    sliders[i-1].setTo(table[i]);
-  }
+function defaultTable() {
+  sliders.forEach((s, i) => {
+    const real = (i === 0 ? 1 : 0);
+    s.setTo(real, 0);
+  });
+  Hash.clear("voice");
   settingsChanged();
 }
 
-// setTimeout(() => {
-//   loadTable([0, 0.5, 0.4, 0.2, 0.4, 0, 0.4, 0, 0.4, 0, 0.4, 0, 0.4]);
-//   play();
-// }, 0);
+function loadTable(table, tableName) {
+  const real = table.real,
+        imag = table.imag;
+  for (let i = 1; i < real.length && i-1 < sliders.length; i++) {
+    sliders[i-1].setTo(real[i], imag[i]);
+  }
+  Hash.add({voice: tableName});
+  settingsChanged();
+}
 
 function harmonicsTable() {
   const real = new Float32Array([0].concat(sliders.map((s) => s.real))),
@@ -57,11 +69,28 @@ function play() {
 function settingsChanged() {
   freq = currentFrequency();
   table = harmonicsTable();
+  Hash.add({frequency: freq});
   if (playing) {
     play();play();
   }
 }
 
-playButton.on('click', play);
-frequencyInput.on('input', debounce(settingsChanged, 300));
+function loadHash() {
+  const options = Hash.get();
+  if (options.frequency) {
+    frequencyInput.val(options.frequency);
+    freq = currentFrequency();
+  }
+  if (options.voice) {
+    TableSelect.select(options.voice);
+  }
+}
+
+playButton.on("click", play);
+frequencyInput.on("input", debounce(settingsChanged, 300));
+frequencyButtons.on("click", (e) => {
+  frequencyInput.val($(e.target).data("freq")).change();
+  settingsChanged();
+});
 sliders.forEach((s) => s.onChange(settingsChanged));
+loadHash();

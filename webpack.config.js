@@ -4,7 +4,7 @@ const webpack = require('webpack'),
 const PATHS = {
   main: './src/main.js',
   html: './index.html',
-  dist: path.join(__dirname, 'dist')
+  public: path.join(__dirname, 'public')
 };
 
 module.exports = {
@@ -13,12 +13,12 @@ module.exports = {
     html: PATHS.html
   },
   output: {
-    path: PATHS.dist,
+    path: PATHS.public,
     publicPath: '/',
     filename: 'bundle.js'
   },
   devServer: {
-    contentBase: PATHS.dist
+    contentBase: PATHS.public
   },
   module: {
     loaders: [

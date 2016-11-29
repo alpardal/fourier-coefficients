@@ -1,4 +1,4 @@
 
 guard 'livereload' do
-  watch(%r{dist/.*$})
+  watch(%r{public/.*$})
 end
