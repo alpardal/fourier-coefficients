@@ -58,9 +58,9 @@
 
 	var _hash2 = _interopRequireDefault(_hash);
 
-	var _slider = __webpack_require__(104);
+	var _complex_input = __webpack_require__(104);
 
-	var _slider2 = _interopRequireDefault(_slider);
+	var _complex_input2 = _interopRequireDefault(_complex_input);
 
 	var _table_select = __webpack_require__(106);
 
@@ -71,12 +71,12 @@
 	var playButton = (0, _jquery2.default)('#play-button'),
 	    frequencyInput = (0, _jquery2.default)('#frequency-input'),
 	    frequencyButtons = (0, _jquery2.default)(".frequency-button"),
-	    sliderContainer = (0, _jquery2.default)("#sliders-container"),
-	    sliders = Array.from({ length: 22 }, _slider2.default);
+	    inputsContainer = (0, _jquery2.default)("#input-container"),
+	    inputs = Array.from({ length: 22 }, _complex_input2.default);
 
-	sliders[0].setTo(1, 0);
-	sliders.forEach(function (s) {
-	  return s.appendTo(sliderContainer);
+	inputs[0].setTo(1, 0);
+	inputs.forEach(function (i) {
+	  return i.appendTo(inputsContainer);
 	});
 
 	_table_select2.default.init(loadTable, defaultTable);
@@ -88,9 +88,9 @@
 	    playing = false;
 
 	function defaultTable() {
-	  sliders.forEach(function (s, i) {
-	    var real = i === 0 ? 1 : 0;
-	    s.setTo(real, 0);
+	  inputs.forEach(function (input, index) {
+	    var real = index === 0 ? 1 : 0;
+	    input.setTo(real, 0);
 	  });
 	  _hash2.default.clear("voice");
 	  settingsChanged();
@@ -99,19 +99,19 @@
 	function loadTable(table, tableName) {
 	  var real = table.real,
 	      imag = table.imag;
-	  for (var i = 1; i < real.length && i - 1 < sliders.length; i++) {
-	    sliders[i - 1].setTo(real[i], imag[i]);
+	  for (var i = 1; i < real.length && i - 1 < inputs.length; i++) {
+	    inputs[i - 1].setTo(real[i], imag[i]);
 	  }
 	  _hash2.default.add({ voice: tableName });
 	  settingsChanged();
 	}
 
 	function harmonicsTable() {
-	  var real = new Float32Array([0].concat(sliders.map(function (s) {
-	    return s.real;
+	  var real = new Float32Array([0].concat(inputs.map(function (i) {
+	    return i.real;
 	  }))),
-	      imag = new Float32Array([0].concat(sliders.map(function (s) {
-	    return s.imag;
+	      imag = new Float32Array([0].concat(inputs.map(function (i) {
+	    return i.imag;
 	  })));
 	  return ctx.createPeriodicWave(real, imag);
 	}
@@ -162,8 +162,8 @@
 	  frequencyInput.val((0, _jquery2.default)(e.target).data("freq")).change();
 	  settingsChanged();
 	});
-	sliders.forEach(function (s) {
-	  return s.onChange(settingsChanged);
+	inputs.forEach(function (i) {
+	  return i.onChange(settingsChanged);
 	});
 	loadHash();
 
@@ -11853,7 +11853,9 @@
 	          key = _keyVal$split2[0],
 	          val = _keyVal$split2[1];
 
-	      obj[key] = val;
+	      if (key !== "") {
+	        obj[key] = val;
+	      }
 	      return obj;
 	    }, {});
 	  }
@@ -11887,11 +11889,11 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var template = "\n<div class=\"slider-col\">\n  <canvas width=100 height=100></canvas>\n  <label>0</label>\n</div>\n";
+	var template = "\n<div class=\"input-col\">\n  <canvas width=100 height=100></canvas>\n  <label>0</label>\n</div>\n";
 
-	var SliderClass = function () {
-	  function SliderClass(element) {
-	    _classCallCheck(this, SliderClass);
+	var ComplexInputClass = function () {
+	  function ComplexInputClass(element) {
+	    _classCallCheck(this, ComplexInputClass);
 
 	    this.element = element;
 	    this.real = 0;
@@ -11905,7 +11907,7 @@
 	    canvas.addEventListener('mousemove', this._mouseMove.bind(this));
 	  }
 
-	  _createClass(SliderClass, [{
+	  _createClass(ComplexInputClass, [{
 	    key: "setTo",
 	    value: function setTo(real, imag) {
 	      this.real = real;
@@ -11963,14 +11965,14 @@
 	    }
 	  }]);
 
-	  return SliderClass;
+	  return ComplexInputClass;
 	}();
 
-	function Slider() {
-	  return new SliderClass((0, _jquery2.default)(template));
+	function ComplexInput() {
+	  return new ComplexInputClass((0, _jquery2.default)(template));
 	}
 
-	exports.default = Slider;
+	exports.default = ComplexInput;
 
 /***/ },
 /* 105 */

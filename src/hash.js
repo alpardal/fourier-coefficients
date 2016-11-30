@@ -21,7 +21,9 @@ const Hash = {
     return window.location.hash.substring(1)
                  .split("&").reduce((obj, keyVal) => {
        const [key, val] = keyVal.split("=");
-       obj[key] = val;
+       if (key !== "") {
+         obj[key] = val;
+       }
        return obj;
     }, {});
   }

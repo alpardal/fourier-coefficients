@@ -2,13 +2,13 @@ import $ from "jquery";
 import Graphics from "./graphics";
 
 const template = `
-<div class="slider-col">
+<div class="input-col">
   <canvas width=100 height=100></canvas>
   <label>0</label>
 </div>
 `;
 
-class SliderClass {
+class ComplexInputClass {
   constructor(element) {
     this.element = element;
     this.real = 0;
@@ -71,9 +71,9 @@ class SliderClass {
   }
 }
 
-function Slider() {
-  return new SliderClass($(template));
+function ComplexInput() {
+  return new ComplexInputClass($(template));
 }
 
 
-export default Slider;
+export default ComplexInput;

@@ -1,17 +1,17 @@
 import $ from "jquery";
 import debounce from "debounce";
 import Hash from "./hash";
-import Slider from "./slider";
+import ComplexInput from "./complex_input";
 import TableSelect from "./table_select";
 
 const playButton = $('#play-button'),
       frequencyInput = $('#frequency-input'),
       frequencyButtons = $(".frequency-button"),
-      sliderContainer = $("#sliders-container"),
-      sliders = Array.from({length: 22}, Slider);
+      inputsContainer = $("#input-container"),
+      inputs = Array.from({length: 22}, ComplexInput);
 
-sliders[0].setTo(1, 0);
-sliders.forEach((s) => s.appendTo(sliderContainer));
+inputs[0].setTo(1, 0);
+inputs.forEach((i) => i.appendTo(inputsContainer));
 
 TableSelect.init(loadTable, defaultTable);
 
@@ -22,9 +22,9 @@ let osc,
     playing = false;
 
 function defaultTable() {
-  sliders.forEach((s, i) => {
-    const real = (i === 0 ? 1 : 0);
-    s.setTo(real, 0);
+  inputs.forEach((input, index) => {
+    const real = (index === 0 ? 1 : 0);
+    input.setTo(real, 0);
   });
   Hash.clear("voice");
   settingsChanged();
@@ -33,16 +33,16 @@ function defaultTable() {
 function loadTable(table, tableName) {
   const real = table.real,
         imag = table.imag;
-  for (let i = 1; i < real.length && i-1 < sliders.length; i++) {
-    sliders[i-1].setTo(real[i], imag[i]);
+  for (let i = 1; i < real.length && i-1 < inputs.length; i++) {
+    inputs[i-1].setTo(real[i], imag[i]);
   }
   Hash.add({voice: tableName});
   settingsChanged();
 }
 
 function harmonicsTable() {
-  const real = new Float32Array([0].concat(sliders.map((s) => s.real))),
-        imag = new Float32Array([0].concat(sliders.map((s) => s.imag)));
+  const real = new Float32Array([0].concat(inputs.map((i) => i.real))),
+        imag = new Float32Array([0].concat(inputs.map((i) => i.imag)));
   return ctx.createPeriodicWave(real, imag);
 }
 
@@ -92,5 +92,5 @@ frequencyButtons.on("click", (e) => {
   frequencyInput.val($(e.target).data("freq")).change();
   settingsChanged();
 });
-sliders.forEach((s) => s.onChange(settingsChanged));
+inputs.forEach((i) => i.onChange(settingsChanged));
 loadHash();
